@@ -48,7 +48,20 @@
   :link '(url-link "https://github.com/andrewpeck/hog.el")
   :prefix "hog")
 
-(defvar hog-vivado-path "/opt/Xilinx/Vivado/2021.1"
+(defun hog--discover-vivado-path ()
+  "Search in standard Xilinx install directory for a Vivado install."
+  (when-let* ((root-dir "/opt/Xilinx/Vivado")
+              (version
+               (thread-last
+                 (directory-files root-dir nil)
+                 (delete ".")
+                 (delete "..")
+                 (sort)
+                 (last)
+                 (car))))
+    (concat root-dir "/" version)))
+
+(defvar hog-vivado-path (hog--discover-vivado-path)
   "Path to the Xilinx Vivado installation.
 Can be set in dir-locals to be changed on a per-project basis.")
 
