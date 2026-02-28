@@ -1,9 +1,9 @@
 ;;; hog.el --- Functions for working with Hog -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2021-2025 Andrew Peck
+;; Copyright (C) 2021-2026 Andrew Peck
 
 ;; Author: Andrew Peck <peckandrew@gmail.com>
-;; URL: https://github.com/andrewpeck/hog-emacs
+;; URL: https://github.com/andrewpeck/hog.el
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "27.1"))
 ;; Keywords: tools vhdl fpga
@@ -41,6 +41,12 @@
 (require 'json)
 (require 'cl-lib)
 (require 'thingatpt)
+
+(defgroup hog nil
+  "An interface to 'hog'."
+  :group 'fpga
+  :link '(url-link "https://github.com/andrewpeck/hog.el")
+  :prefix "hog")
 
 (defvar hog-vivado-path "/opt/Xilinx/Vivado/2021.1"
   "Path to the Xilinx Vivado installation.
