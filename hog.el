@@ -241,7 +241,7 @@ The resulting list is of the form:
 (defun hog--append-to-library (src-list lib-name file-name)
   "SRC-LIST LIB-NAME FILE-NAME."
   (let ((lib (assoc lib-name src-list)))
-    (when (eq lib nil)
+    (unless lib
       (setf src-list (append src-list (list (list lib-name (list)))))
       (setq lib (assoc lib-name src-list)))
     (setf (cadr lib) (append (cadr lib) (list file-name) )))
