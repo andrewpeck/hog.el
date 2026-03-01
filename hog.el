@@ -168,8 +168,7 @@ FN should be a function which take a project as an argument."
 colorize it using CCZE, with the Hog arguments ARGS."
 
   (hog--check-for-vivado)
-  (let* ((name (format "%s" command))
-         (buf (format "*%s*" name)))
+  (let* ((buf (format "*%s*" command)))
 
     ;; construct the output command
     (let ((cmd-str (format "cd %s && source %s && %s | tee hog.log %s"
