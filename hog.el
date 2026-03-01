@@ -299,21 +299,20 @@ The resulting list is of the form:
   (hog--get-project-and-do-lisp
    (lambda (project)
      (with-temp-file (format "%s/vhdltool-config.yaml" (hog--project-root))
-       (progn
-         (insert
-          (json-encode
-           (list (cons 'Libraries
-                       (mapcar (lambda (lib)
-                                 (list (cons 'name (car lib))
-                                       (cons 'paths (apply #'vector (cadr lib)))))
-                               (append
-                                (hog--parse-project-xml project)
-                                (list hog-ieee-library)
-                                (list hog-unisim-library))))
-                 (cons 'Preferences
-                       hog-vhdl-tool-preferences)
-                 (cons 'Lint
-                       hog-vhdl-tool-lint-settings)))))
+       (insert
+        (json-encode
+         (list (cons 'Libraries
+                     (mapcar (lambda (lib)
+                               (list (cons 'name (car lib))
+                                     (cons 'paths (apply #'vector (cadr lib)))))
+                             (append
+                              (hog--parse-project-xml project)
+                              (list hog-ieee-library)
+                              (list hog-unisim-library))))
+               (cons 'Preferences
+                     hog-vhdl-tool-preferences)
+               (cons 'Lint
+                     hog-vhdl-tool-lint-settings))))
        (json-pretty-print-buffer)))))
 
 ;;------------------------------------------------------------------------------
@@ -415,8 +414,8 @@ The resulting list is of the form:
                       (append (list hog-unisim-library)
                               (hog--parse-project-xml project)))))
          (with-temp-file output-file
-           (progn (insert (json-encode config))
-                  (json-pretty-print-buffer))))))))
+           (insert (json-encode config))
+           (json-pretty-print-buffer)))))))
 
 ;;------------------------------------------------------------------------------
 ;; Hog Source File Mode
