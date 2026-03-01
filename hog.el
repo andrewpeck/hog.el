@@ -149,13 +149,13 @@ FN should be a function which take a project as an argument."
 
 ;;;###autoload
 (defun hog-open-project ()
- "Open the Hog PROJECT."
- ;; TODO: check if the xml file exists, prompt to create if it doesn't
- (hog--get-project-and-do-lisp
-  (lambda (project)
-    (progn
-      (hog--check-for-vivado)
-      (let ((project-file (hog--get-project-xml project)))
+  "Open the Hog PROJECT."
+  ;; TODO: check if the xml file exists, prompt to create if it doesn't
+  (hog--get-project-and-do-lisp
+   (lambda (project)
+     (progn
+       (hog--check-for-vivado)
+       (let ((project-file (hog--get-project-xml project)))
 
          (unless project-file
            (error (concat "No project file found for " project)))
@@ -163,12 +163,12 @@ FN should be a function which take a project as an argument."
          (unless (file-exists-p project-file)
            (error (concat "Project file does not exist at " project-file)))
 
-        (let ((command (format "cd %s && source %s && vivado %s &"
-                               (hog--project-root)
-                               (concat  hog-vivado-path "/settings64.sh")
-                               project-file)))
-          (message (format "Opening Hog Project %s" project))
-          (call-process "bash" nil 0 nil "-c" command)))))))
+         (let ((command (format "cd %s && source %s && vivado %s &"
+                                (hog--project-root)
+                                (concat  hog-vivado-path "/settings64.sh")
+                                project-file)))
+           (message (format "Opening Hog Project %s" project))
+           (call-process "bash" nil 0 nil "-c" command)))))))
 
 (defun hog--run-command (command project &rest args)
   "Run a Hog COMMAND for a given PROJECT.
@@ -304,26 +304,26 @@ The resulting list is of the form:
 
 ;;;###autoload
 (defun hog-vhdl-tool-create-project-yaml ()
- "Create a VHDL-tool yaml file for a Hog PROJECT."
- (hog--get-project-and-do-lisp
-  (lambda (project)
-    (with-temp-file (format "%s/vhdltool-config.yaml" (hog--project-root))
-      (progn
-        (insert
-         (json-encode
-          (list (cons 'Libraries
-                      (mapcar (lambda (lib)
-                                (list (cons 'name (car lib))
-                                      (cons 'paths (apply #'vector (cadr lib)))))
-                              (append
-                               (hog--parse-project-xml project)
-                               (list hog-ieee-library)
-                               (list hog-unisim-library))))
-                (cons 'Preferences
-                      hog-vhdl-tool-preferences)
-                (cons 'Lint
-                      hog-vhdl-tool-lint-settings)))))
-      (json-pretty-print-buffer)))))
+  "Create a VHDL-tool yaml file for a Hog PROJECT."
+  (hog--get-project-and-do-lisp
+   (lambda (project)
+     (with-temp-file (format "%s/vhdltool-config.yaml" (hog--project-root))
+       (progn
+         (insert
+          (json-encode
+           (list (cons 'Libraries
+                       (mapcar (lambda (lib)
+                                 (list (cons 'name (car lib))
+                                       (cons 'paths (apply #'vector (cadr lib)))))
+                               (append
+                                (hog--parse-project-xml project)
+                                (list hog-ieee-library)
+                                (list hog-unisim-library))))
+                 (cons 'Preferences
+                       hog-vhdl-tool-preferences)
+                 (cons 'Lint
+                       hog-vhdl-tool-lint-settings)))))
+       (json-pretty-print-buffer)))))
 
 ;;------------------------------------------------------------------------------
 ;; VHDL LS TOML Project File Creation
@@ -353,11 +353,11 @@ The resulting list is of the form:
 
 ;;;###autoload
 (defun hog-vhdl-ls-create-project-toml ()
- "Create a VHDL-ls yaml file for a Hog PROJECT."
- (hog--get-project-and-do-lisp
-  (lambda (project)
-    (let ((yaml (hog--vhdl-ls-parse-libs (hog--parse-project-xml project))))
-      (shell-command (format "echo '%s' > %svhdl_ls.toml" yaml (hog--project-root)))))))
+  "Create a VHDL-ls yaml file for a Hog PROJECT."
+  (hog--get-project-and-do-lisp
+   (lambda (project)
+     (let ((yaml (hog--vhdl-ls-parse-libs (hog--parse-project-xml project))))
+       (shell-command (format "echo '%s' > %svhdl_ls.toml" yaml (hog--project-root)))))))
 
 ;;------------------------------------------------------------------------------
 ;; GHDL-LS JSON Project File Creation
@@ -395,9 +395,9 @@ The resulting list is of the form:
   (let ((libname (car lib))
         (libfiles (cadr lib)))
     (cl-flet ((format-lib-file (file)
-                               (list `(file . ,file)
-                                     '(language . "vhdl")
-                                     `(library . ,libname))))
+                (list `(file . ,file)
+                      '(language . "vhdl")
+                      `(library . ,libname))))
       (mapcar #'format-lib-file libfiles))))
 
 (defun hog--ghdl-ls-format-libs (libs)
@@ -732,17 +732,17 @@ template at a specific PATH."
 
         ;; skip comments
         (unless (string-match "^#.*"
-                                 (buffer-substring-no-properties
-                                  (line-beginning-position)
-                                  (line-end-position)))
+                              (buffer-substring-no-properties
+                               (line-beginning-position)
+                               (line-end-position)))
 
           (let* ((link (hog--get-link-at-point)))
             (when (and link
                        (not (string-empty-p link))
                        (not (file-expand-wildcards link))
                        (not (file-exists-p link)))
-                  (setq errors (+ 1 errors))
-                  (princ (format "Error:%d \"%s\" not found\n" (line-number-at-pos) link)))))
+              (setq errors (+ 1 errors))
+              (princ (format "Error:%d \"%s\" not found\n" (line-number-at-pos) link)))))
         (forward-line))) errors))
 
 (provide 'hog)
