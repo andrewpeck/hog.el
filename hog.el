@@ -323,7 +323,7 @@ The resulting list is of the form:
 (defun hog--vhdl-ls-lib-to-string (library)
   "LIBRARY."
   (let ((lib-name (car library))
-        (lib-files (car (cdr library)))
+        (lib-files (cadr library))
         (pad "  "))
 
     (format "\n%s.files = [\n%s]\n"
