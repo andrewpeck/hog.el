@@ -695,22 +695,26 @@ template at a specific PATH."
 ;;;###autoload
 (defun hog-insert-vhdl-template ()
   "Insert a vivado vhdl template."
-  (interactive (hog--insert-template 'vhdl)))
+  (interactive)
+  (hog--insert-template 'vhdl))
 
 ;;;###autoload
 (defun hog-insert-verilog-template ()
   "Insert a vivado verilog template."
-  (interactive (hog--insert-template 'verilog)))
+  (interactive)
+  (hog--insert-template 'verilog))
 
 ;;;###autoload
 (defun hog-insert-xdc-template ()
   "Insert a vivado XDC template."
-  (interactive (hog--insert-template 'xdc)))
+  (interactive)
+  (hog--insert-template 'xdc))
 
 ;;;###autoload
 (defun hog-insert-systemverilog-template ()
   "Insert a vivado systemverilog template."
-  (interactive (hog--insert-template 'systemverilog)))
+  (interactive)
+  (hog--insert-template 'systemverilog))
 
 ;;;###autoload
 (defun hog-check-src-file ()
