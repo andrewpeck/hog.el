@@ -50,7 +50,8 @@
 
 (defun hog--discover-vivado-path ()
   "Search in standard Xilinx install directory for a Vivado install."
-  (when-let* ((root-dir "/opt/Xilinx/Vivado")
+  (when-let* ((root-dir (or (file-directory-p "/opt/Xilinx/Vivado")
+                            (file-directory-p "/tools/Xilinx/Vivado")))
               (version
                (thread-last
                  (directory-files root-dir nil)
