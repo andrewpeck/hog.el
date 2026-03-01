@@ -424,15 +424,13 @@ hash table."
   "Create GHDL-LS Json File."
   (hog--get-project-and-do-lisp
    (lambda (project)
-     (if (string-equal project "")
-         (message "You must specify a valid project!")
-       (let ((output-file (format "%shdl-prj.json" (hog--project-root)))
-             (config (hog--ghdl-ls-make-config
-                      (append (list hog-unisim-library)
-                              (hog--parse-project-xml project)))))
-         (with-temp-file output-file
-           (insert (json-encode config))
-           (json-pretty-print-buffer)))))))
+     (let ((output-file (format "%shdl-prj.json" (hog--project-root)))
+           (config (hog--ghdl-ls-make-config
+                    (append (list hog-unisim-library)
+                            (hog--parse-project-xml project)))))
+       (with-temp-file output-file
+         (insert (json-encode config))
+         (json-pretty-print-buffer))))))
 
 ;;------------------------------------------------------------------------------
 ;; Hog Source File Mode
