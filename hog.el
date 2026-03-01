@@ -153,22 +153,21 @@ FN should be a function which take a project as an argument."
   ;; TODO: check if the xml file exists, prompt to create if it doesn't
   (hog--get-project-and-do-lisp
    (lambda (project)
-     (progn
-       (hog--check-for-vivado)
-       (let ((project-file (hog--get-project-xml project)))
+     (hog--check-for-vivado)
+     (let ((project-file (hog--get-project-xml project)))
 
-         (unless project-file
-           (error "No project file found for %s" project))
+       (unless project-file
+         (error "No project file found for %s" project))
 
-         (unless (file-exists-p project-file)
-           (error "Project file does not exist at %s" project-file))
+       (unless (file-exists-p project-file)
+         (error "Project file does not exist at %s" project-file))
 
-         (let ((command (format "cd %s && source %s && vivado %s &"
-                                (hog--project-root)
-                                (concat  hog-vivado-path "/settings64.sh")
-                                project-file)))
-           (message (format "Opening Hog Project %s" project))
-           (call-process "bash" nil 0 nil "-c" command)))))))
+       (let ((command (format "cd %s && source %s && vivado %s &"
+                              (hog--project-root)
+                              (concat  hog-vivado-path "/settings64.sh")
+                              project-file)))
+         (message (format "Opening Hog Project %s" project))
+         (call-process "bash" nil 0 nil "-c" command))))))
 
 (defun hog--run-command (command project &rest args)
   "Run a Hog COMMAND for a given PROJECT.
