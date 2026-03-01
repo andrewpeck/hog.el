@@ -156,12 +156,6 @@ FN should be a function which take a project as an argument."
      (hog--check-for-vivado)
      (let ((project-file (hog--get-project-xml project)))
 
-       (unless project-file
-         (error "No project file found for %s" project))
-
-       (unless (file-exists-p project-file)
-         (error "Project file does not exist at %s" project-file))
-
        (let ((command (format "cd %s && source %s && vivado %s &"
                               (hog--project-root)
                               (concat  hog-vivado-path "/settings64.sh")
