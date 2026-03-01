@@ -387,7 +387,12 @@ The resulting list is of the form:
              options) options))
 
 (defun hog--ghdl-ls-format-lib (lib)
-  ""
+  "Format a VHDL library list for Language Server Protocol use.
+
+LIB is a list with the library name as its first element and a list of
+files as its second element. Return a list of alists, each containing
+the keys `file', `language', and `library', where `language' is always
+`vhdl'."
   (let ((libname (car lib))
         (libfiles (cadr lib)))
     (cl-flet ((format-lib-file (file)
@@ -397,19 +402,25 @@ The resulting list is of the form:
       (mapcar #'format-lib-file libfiles))))
 
 (defun hog--ghdl-ls-format-libs (libs)
-  ""
+  "Format LIBS for GHDL language server.
+
+Return a list by applying `hog--ghdl-ls-format-lib' to each element in LIBS."
   (apply #'append
          (mapcar #'hog--ghdl-ls-format-lib libs)))
 
 (defun hog--ghdl-ls-make-config (libs)
-  ""
+  "Create a GHDL language server configuration hash table.
+
+Takes LIBS, formats them, and inserts into the hash table under `files'.
+Inserts `hog--ghdl-ls-options' under `options'. Returns the configuration
+hash table."
   (let ((config (make-hash-table)))
     (puthash 'options hog--ghdl-ls-options config)
     (puthash 'files (hog--ghdl-ls-format-libs libs) config)
     config))
 
 ;;;###autoload
-(defun hog-ghdl-ls-create-project-json () 
+(defun hog-ghdl-ls-create-project-json ()
   "Create GHDL-LS Json File."
   (hog--get-project-and-do-lisp
    (lambda (project)
