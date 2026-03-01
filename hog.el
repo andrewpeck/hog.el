@@ -345,6 +345,7 @@ The resulting list is of the form:
 ;;;###autoload
 (defun hog-vhdl-ls-create-project-toml ()
   "Create a VHDL-ls yaml file for a Hog PROJECT."
+  (interactive)
   (hog--get-project-and-do-lisp
    (lambda (project)
      (let ((yaml (hog--vhdl-ls-parse-libs (hog--parse-project-xml project))))
