@@ -570,7 +570,7 @@ in that path"
                             "_ooc.xdc" "_sim_netlist.vhdl" "_stub.v" "_stub.vhdl")))))
             (dolist (file files-to-remove)
               (when (file-exists-p file)
-                (setq file-count (+ 1 file-count))
+                (setq file-count (1+ file-count))
                 (setq file-size (+ (file-attribute-size (file-attributes file)) file-size))
                 (princ (format "Removing %s\n" file))
                 (delete-file file))))
@@ -730,7 +730,7 @@ template at a specific PATH."
                        (not (string-empty-p link))
                        (not (file-expand-wildcards link))
                        (not (file-exists-p link)))
-              (setq errors (+ 1 errors))
+              (setq errors (1+ errors))
               (princ (format "Error:%d \"%s\" not found\n" (line-number-at-pos) link)))))
         (forward-line))) errors))
 
