@@ -568,41 +568,40 @@ in that path"
   (interactive)
 
   (let ((file-count 0)
-        (file-size 0))
+        (file-size 0)
+        (xci-files
+         (split-string
+          (shell-command-to-string
+           (concat "find " (hog--project-root) " -name *.xci")) "\n" t)))
+    ;; loop over each xci file
+    (dolist (xci xci-files)
+      (let* ((file-name-noext (file-name-sans-extension xci))
+             (dirname (file-name-directory xci))
+             (files-to-remove
+              (append
+               (mapcar (lambda (x) (concat file-name-noext x))
+                       '(".dcp" ".veo" ".vho" ".xml" "_sim_netlist.v"
+                         "_ooc.xdc" "_sim_netlist.vhdl" "_stub.v" "_stub.vhdl")))))
+        (dolist (file files-to-remove)
+          (when (file-exists-p file)
+            (setq file-count (1+ file-count)
+                  file-size (+ (file-attribute-size (file-attributes file)) file-size))
+            (princ (format "Removing %s\n" file))
+            (delete-file file)))
 
-    (let ((xci-files
-           (split-string
-            (shell-command-to-string
-             (concat  "find " (hog--project-root) " -name *.xci")) "\n" t)))
-      (dolist (xci xci-files)
-        (let ((file-name-noext (file-name-sans-extension xci))
-              (dirname (file-name-directory xci)))
+        (let ((directories-to-remove
+               (mapcar (lambda (x) (concat dirname x))
+                       '("hdl" "synth" "doc" "sim" "ila_v6_2"))))
+          (dolist (file directories-to-remove)
+            (when (file-exists-p file)
+              (setq file-count (+ (string-to-number (shell-command-to-string (concat "find " file " | wc -l"))) file-count)
+                    file-size (+ (string-to-number (car (split-string (shell-command-to-string (concat "du " file))))) file-size))
+              (princ (format "Removing %s\n" file))
+              (delete-directory file t))))))
 
-          (let ((files-to-remove
-                 (append
-                  (mapcar (lambda (x) (concat file-name-noext x))
-                          '(".dcp" ".veo" ".vho" ".xml" "_sim_netlist.v"
-                            "_ooc.xdc" "_sim_netlist.vhdl" "_stub.v" "_stub.vhdl")))))
-            (dolist (file files-to-remove)
-              (when (file-exists-p file)
-                (setq file-count (1+ file-count))
-                (setq file-size (+ (file-attribute-size (file-attributes file)) file-size))
-                (princ (format "Removing %s\n" file))
-                (delete-file file))))
-
-          (let ((directories-to-remove
-                 (mapcar (lambda (x) (concat dirname x))
-                         '("hdl" "synth" "doc" "sim" "ila_v6_2"))))
-            (dolist (file directories-to-remove)
-              (when (file-exists-p file)
-                (setq file-count (+ (string-to-number (shell-command-to-string (concat  "find " file " | wc -l"))) file-count))
-                (setq file-size (+ (string-to-number (car (split-string  (shell-command-to-string (concat  "du " file))))) file-size))
-                (princ (format "Removing %s\n" file))
-                (delete-directory file t)))))))
-
-    (princ (format  "Removed %d files, %s"
-                    file-count
-                    (file-size-human-readable file-size)))))
+    (princ (format "Removed %d files, %s"
+                   file-count
+                   (file-size-human-readable file-size)))))
 
 ;;------------------------------------------------------------------------------
 ;; Vivado Template Insertion
