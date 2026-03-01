@@ -48,19 +48,24 @@
   :link '(url-link "https://github.com/andrewpeck/hog.el")
   :prefix "hog")
 
+(defun hog--file-exists (file)
+  "Not predicated version of `file-exists-p' on FILE."
+  (and (file-exists-p file)
+       file))
+
+(defun hog--directory-exists (dir)
+  "Not predicated version of `file-directory-p' on DIR."
+  (and (file-directory-p dir)
+       dir))
+
 (defun hog--discover-vivado-path ()
   "Search in standard Xilinx install directory for a Vivado install."
-  (when-let* ((root-dir (or (file-directory-p "/opt/Xilinx/Vivado")
-                            (file-directory-p "/tools/Xilinx/Vivado")))
-              (version
-               (thread-last
-                 (directory-files root-dir nil)
-                 (delete ".")
-                 (delete "..")
-                 (sort)
-                 (last)
-                 (car))))
-    (concat root-dir "/" version)))
+  (when-let* ((root-dir (or (hog--file-exists "/opt/Xilinx/Vivado")
+                            (hog--file-exists "/tools/Xilinx/Vivado"))))
+     (thread-last
+       (directory-files root-dir t "^[0-9]\\{4\\}.*")
+       (last)
+       (car))))
 
 (defvar hog-vivado-path (hog--discover-vivado-path)
   "Path to the Xilinx Vivado installation.
@@ -74,7 +79,7 @@ Can be set in dir-locals to be changed on a per-project basis.")
 
 (defun hog--check-for-vivado ()
   "Check to see if vivado exists at the specified path."
-  (unless (file-exists-p hog-vivado-path)
+  (unless (hog--directory-exists hog-vivado-path)
     (error "Vivado not found at %s" hog-vivado-path)))
 
 (defun hog--project-root ()
@@ -104,10 +109,9 @@ Can be set in dir-locals to be changed on a per-project basis.")
   (let* ((base  (format "%sProjects/%s/%s" (hog--project-root) project project))
          (xpr (format "%s.xpr" base))
          (ppr (format "%s.ppr" base)))
-    (cond
-     ((file-exists-p xpr) xpr)
-     ((file-exists-p ppr) ppr)
-     (t (error "Project %s XML not found!" project)))))
+    (or (hog--file-exists xpr)
+        (hog--file-exists ppr)
+        (error "Project %s XML not found!" project))))
 
 (defun hog--get-project ()
   "Interactively get a hog project."
@@ -662,7 +666,7 @@ This uses either cached values stored in JSON, or creating the
 JSON file if it does not exist."
 
   ;; if the cache file does not exist, create it
-  (unless  (file-exists-p (hog--template-cache lang))
+  (unless (file-exists-p (hog--template-cache lang))
     (with-temp-file (hog--template-cache lang)
       (insert (json-encode
                (cons "Templates" (hog--walk-vivado-template-xml
