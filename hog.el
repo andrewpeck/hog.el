@@ -201,7 +201,7 @@ colorize it using CCZE, with the Hog arguments ARGS."
 
 (defun hog--parse-vivado-xpr (project-file)
   "Parse a Vivado XPR PROJECT-FILE into a list of libraries and their sources."
-  (let ((lib-list (list)))
+  (let ((lib-list nil))
     (dolist (file-node
              ;; get a list of all the Project -> FileSets -> FileSet --> File nodes
              (xml-get-children (assq 'FileSet (assq 'FileSets (assq 'Project (xml-parse-file project-file)))) 'File))
