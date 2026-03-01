@@ -440,13 +440,13 @@ The resulting list is of the form:
 
 (defun hog--get-link-at-point ()
   "Return the link at point in a Hog src file."
-  (let ((inhibit-message t))
-    (let ((filename
-           (progn (thing-at-point-looking-at hog--file-name-re)
-                  (match-string-no-properties 1))))
-      (if (and filename (not (string-empty-p filename)))
-          (concat (hog--project-root) filename)
-        (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
+  (let ((inhibit-message t)
+        (filename
+         (progn (thing-at-point-looking-at hog--file-name-re)
+                (match-string-no-properties 1))))
+    (if (and filename (not (string-empty-p filename)))
+        (concat (hog--project-root) filename)
+      (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
 ;;;###autoload
 (defun hog-init-project ()
