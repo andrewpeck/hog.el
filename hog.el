@@ -73,7 +73,7 @@ Can be set in dir-locals to be changed on a per-project basis.")
 
 (defun hog--check-for-vivado ()
   "Check to see if vivado exists at the specified path."
-  (when (not (file-exists-p hog-vivado-path))
+  (unless (file-exists-p hog-vivado-path)
     (error (concat "Vivado not found at " hog-vivado-path))))
 
 (defun hog--project-root ()
@@ -157,11 +157,11 @@ FN should be a function which take a project as an argument."
       (hog--check-for-vivado)
       (let ((project-file (hog--get-project-xml project)))
 
-        (when (not project-file)
-          (error (concat "No project file found for " project)))
+         (unless project-file
+           (error (concat "No project file found for " project)))
 
-        (when (not (file-exists-p project-file))
-          (error (concat "Project file does not exist at " project-file)))
+         (unless (file-exists-p project-file)
+           (error (concat "Project file does not exist at " project-file)))
 
         (let ((command (format "cd %s && source %s && vivado %s &"
                                (hog--project-root)
@@ -463,13 +463,13 @@ The resulting list is of the form:
   "Init a Hog project in the current directory."
   (interactive)
   (shell-command "git submodule add https://gitlab.com/hog-cern/Hog.git")
-  (when (not (file-exists-p ".gitignore"))
+  (unless (file-exists-p ".gitignore")
     (shell-command "cp Hog/Templates/gitignore .gitignore"))
 
-  (when (not (file-exists-p ".gitlab-ci.yml"))
+  (unless (file-exists-p ".gitlab-ci.yml")
     (shell-command "cp Hog/Templates/gitlab-ci.yml .gitlab-ci.yml"))
 
-  (when (not (file-exists-p "Top/project/hog.conf"))
+  (unless (file-exists-p "Top/project/hog.conf")
     (mkdir "Top/project" t)
     (mkdir "Top/project/list" t)
     (shell-command "cp Hog/Templates/hog_vivado.conf Top/project/hog.conf")))
@@ -654,7 +654,7 @@ This uses either cached values stored in JSON, or creating the
 JSON file if it does not exist."
 
   ;; if the cache file does not exist, create it
-  (when (not  (file-exists-p (hog--template-cache lang)))
+  (unless  (file-exists-p (hog--template-cache lang))
     (with-temp-file (hog--template-cache lang)
       (insert (json-encode
                (cons "Templates" (hog--walk-vivado-template-xml
@@ -729,10 +729,10 @@ template at a specific PATH."
       (while (< (line-number-at-pos) (line-number-at-pos (point-max)))
 
         ;; skip comments
-        (when (not (string-match "^#.*"
+        (unless (string-match "^#.*"
                                  (buffer-substring-no-properties
                                   (line-beginning-position)
-                                  (line-end-position))))
+                                  (line-end-position)))
 
           (let* ((link (hog--get-link-at-point)))
             (when (and link
