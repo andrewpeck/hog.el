@@ -478,9 +478,8 @@ The resulting list is of the form:
       (find-file file-with-path))
 
      ;; check if the file contains a wildcard suffix, if so open it as a directory
-     ((file-expand-wildcards file-with-path)
-      (find-file (file-name-directory
-                  (car (file-expand-wildcards file-with-path))))))))
+     ((when-let* ((files (file-expand-wildcards file-with-path)))
+        (find-file (file-name-directory (car files))))))))
 
 ;;;###autoload
 (defun hog-add-src-file ()
