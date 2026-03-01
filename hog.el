@@ -485,7 +485,7 @@ The resulting list is of the form:
 (defun hog-add-src-file ()
   "Add a source file in the current project."
   (interactive)
-  (insert (completing-read "File: " (split-string (shell-command-to-string "git ls-files --full-name :/*.vhd :/*.vhd :/*.sv :/*.v :/*.svh :/*.src :/*.xdc :/*.tcl")))))
+  (insert (completing-read "File: " (split-string (shell-command-to-string "git ls-files --full-name :/*.vhd :/*.sv :/*.v :/*.svh :/*.src :/*.xdc :/*.tcl")))))
 
 ;;;###autoload
 (defun hog-expand-glob-at-point ()
