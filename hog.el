@@ -79,9 +79,12 @@ Can be set in dir-locals to be changed on a per-project basis.")
 
 (defun hog--project-root ()
   "Get the root of the current version controlled project."
-  (expand-file-name (or (and (fboundp 'projectile-project-root) (projectile-project-root))
-                        (vc-root-dir)
-                        (locate-dominating-file default-directory ".git"))))
+  (let ((root
+         (expand-file-name (or (and (fboundp 'projectile-project-root) (projectile-project-root))
+                               (vc-root-dir)
+                               (locate-dominating-file default-directory ".git")))))
+    (unless root (user-error "No root directory found!"))
+    root))
 
 (defun hog--get-projects ()
   "Get a list of available Hog projects."
