@@ -348,8 +348,12 @@ The resulting list is of the form:
   (interactive)
   (hog--get-project-and-do-lisp
    (lambda (project)
-     (let ((yaml (hog--vhdl-ls-parse-libs (hog--parse-project-xml project))))
-       (shell-command (format "echo '%s' > %svhdl_ls.toml" yaml (hog--project-root)))))))
+     (when-let*
+         ((yaml (hog--vhdl-ls-parse-libs (hog--parse-project-xml project)))
+          (target (concat (hog--project-root) "vhdl_ls.toml")))
+       (with-temp-file target
+         (insert yaml))
+       (message "Created %s" target)))))
 
 ;;------------------------------------------------------------------------------
 ;; GHDL-LS JSON Project File Creation
