@@ -62,10 +62,10 @@
   "Search in standard Xilinx install directory for a Vivado install."
   (when-let* ((root-dir (or (hog--file-exists "/opt/Xilinx/Vivado")
                             (hog--file-exists "/tools/Xilinx/Vivado"))))
-     (thread-last
-       (directory-files root-dir t "^[0-9]\\{4\\}.*")
-       (last)
-       (car))))
+    (thread-last
+      (directory-files root-dir t "^[0-9]\\{4\\}.*")
+      (last)
+      (car))))
 
 (defvar hog-vivado-path (hog--discover-vivado-path)
   "Path to the Xilinx Vivado installation.
@@ -607,8 +607,8 @@ in that path"
               (delete-directory file t))))))
 
     (message (format "Removed %d files, %s"
-                   file-count
-                   (file-size-human-readable file-size)))))
+                     file-count
+                     (file-size-human-readable file-size)))))
 
 ;;------------------------------------------------------------------------------
 ;; Vivado Template Insertion
