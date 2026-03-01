@@ -589,7 +589,7 @@ in that path"
           (when (file-exists-p file)
             (setq file-count (1+ file-count)
                   file-size (+ (file-attribute-size (file-attributes file)) file-size))
-            (princ (format "Removing %s\n" file))
+            (message (format "Removing %s\n" file))
             (delete-file file)))
 
         (let ((directories-to-remove
@@ -599,10 +599,10 @@ in that path"
             (when (file-exists-p file)
               (setq file-count (+ (string-to-number (shell-command-to-string (concat "find " file " | wc -l"))) file-count)
                     file-size (+ (string-to-number (car (split-string (shell-command-to-string (concat "du " file))))) file-size))
-              (princ (format "Removing %s\n" file))
+              (message (format "Removing %s\n" file))
               (delete-directory file t))))))
 
-    (princ (format "Removed %d files, %s"
+    (message (format "Removed %d files, %s"
                    file-count
                    (file-size-human-readable file-size)))))
 
