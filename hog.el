@@ -482,13 +482,15 @@ The resulting list is of the form:
   (interactive)
   (let ((file-with-path (hog--get-link-at-point)))
 
-    (when (file-exists-p file-with-path)
+    (cond
+     ;; regular file, just open
+     ((file-exists-p file-with-path)
       (find-file file-with-path))
 
-    ;; check if the file contains a wildcard suffix, if so open it as a directory
-    (when (file-expand-wildcards file-with-path)
+     ;; check if the file contains a wildcard suffix, if so open it as a directory
+     ((file-expand-wildcards file-with-path)
       (find-file (file-name-directory
-                  (car (file-expand-wildcards file-with-path)))))))
+                  (car (file-expand-wildcards file-with-path))))))))
 
 ;;;###autoload
 (defun hog-add-src-file ()
