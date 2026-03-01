@@ -637,7 +637,7 @@ It joins together the path into a single string with separated by arrows."
   "Return the path of the vivado xml template file for a given LANG."
   (concat hog-vivado-path
           "/data/parts/xilinx/templates/vivado/"
-          "/" (symbol-name lang) ".xml"))
+          (symbol-name lang) ".xml"))
 
 (defun hog--get-templates (lang)
   "Return the template list for a given LANG.
