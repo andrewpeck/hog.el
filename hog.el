@@ -490,6 +490,7 @@ The resulting list is of the form:
       (find-file (file-name-directory
                   (car (file-expand-wildcards file-with-path)))))))
 
+;;;###autoload
 (defun hog-add-src-file ()
   "Add a source file in the current project."
   (interactive)
