@@ -74,7 +74,7 @@ Can be set in dir-locals to be changed on a per-project basis.")
 (defun hog--check-for-vivado ()
   "Check to see if vivado exists at the specified path."
   (unless (file-exists-p hog-vivado-path)
-    (error (concat "Vivado not found at " hog-vivado-path))))
+    (error "Vivado not found at %s" hog-vivado-path)))
 
 (defun hog--project-root ()
   "Get the root of the current version controlled project."
@@ -103,7 +103,7 @@ Can be set in dir-locals to be changed on a per-project basis.")
     (cond
      ((file-exists-p xpr) xpr)
      ((file-exists-p ppr) ppr)
-     (t (error (format  "Project %s XML not found!" project))))))
+     (t (error "Project %s XML not found!" project)))))
 
 (defun hog--get-project ()
   "Interactively get a hog project."
@@ -158,10 +158,10 @@ FN should be a function which take a project as an argument."
        (let ((project-file (hog--get-project-xml project)))
 
          (unless project-file
-           (error (concat "No project file found for " project)))
+           (error "No project file found for %s" project))
 
          (unless (file-exists-p project-file)
-           (error (concat "Project file does not exist at " project-file)))
+           (error "Project file does not exist at %s" project-file))
 
          (let ((command (format "cd %s && source %s && vivado %s &"
                                 (hog--project-root)
