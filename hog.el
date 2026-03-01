@@ -593,8 +593,8 @@ in that path"
                 (delete-file file))))
 
           (let ((directories-to-remove
-                 (append (mapcar (lambda (x) (concat dirname x))
-                                 '("hdl" "synth" "doc" "sim" "ila_v6_2")))))
+                 (mapcar (lambda (x) (concat dirname x))
+                         '("hdl" "synth" "doc" "sim" "ila_v6_2"))))
             (dolist (file directories-to-remove)
               (when (file-exists-p file)
                 (setq file-count (+ (string-to-number (shell-command-to-string (concat  "find " file " | wc -l"))) file-count))
