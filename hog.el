@@ -534,6 +534,9 @@ in that path"
            ;; Concate everything together into a string
            (files-expanded (string-join files-relative "\n")))
 
+      (unless files-expanded
+        (user-error "No files found at glob %s" filename))
+
       (end-of-line)
       (newline)
       (insert files-expanded))))
