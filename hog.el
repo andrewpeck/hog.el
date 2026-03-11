@@ -439,6 +439,22 @@ hash table."
          (insert (json-encode config))
          (json-pretty-print-buffer))))))
 
+;;;###autoload
+(defun hog-init-project ()
+  "Init a Hog project in the current directory."
+  (interactive)
+  (shell-command "git submodule add https://gitlab.com/hog-cern/Hog.git")
+  (unless (file-exists-p ".gitignore")
+    (shell-command "cp Hog/Templates/gitignore .gitignore"))
+
+  (unless (file-exists-p ".gitlab-ci.yml")
+    (shell-command "cp Hog/Templates/gitlab-ci.yml .gitlab-ci.yml"))
+
+  (unless (file-exists-p "Top/project/hog.conf")
+    (mkdir "Top/project" t)
+    (mkdir "Top/project/list" t)
+    (shell-command "cp Hog/Templates/hog_vivado.conf Top/project/hog.conf")))
+
 ;;------------------------------------------------------------------------------
 ;; Hog Source File Mode
 ;;------------------------------------------------------------------------------
@@ -468,26 +484,9 @@ hash table."
                 (match-string-no-properties 1))))
     (if (and filename (not (string-empty-p filename)))
         (concat (hog--project-root) filename)
-      (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
+      (buffer-substring-no-properties (line-beginning-position)
+                                      (line-end-position)))))
 
-;;;###autoload
-(defun hog-init-project ()
-  "Init a Hog project in the current directory."
-  (interactive)
-  (shell-command "git submodule add https://gitlab.com/hog-cern/Hog.git")
-  (unless (file-exists-p ".gitignore")
-    (shell-command "cp Hog/Templates/gitignore .gitignore"))
-
-  (unless (file-exists-p ".gitlab-ci.yml")
-    (shell-command "cp Hog/Templates/gitlab-ci.yml .gitlab-ci.yml"))
-
-  (unless (file-exists-p "Top/project/hog.conf")
-    (mkdir "Top/project" t)
-    (mkdir "Top/project/list" t)
-    (shell-command "cp Hog/Templates/hog_vivado.conf Top/project/hog.conf")))
-
-;; FIXME: does not work with file names with spaces
-;; spaces should be escaped
 ;;;###autoload
 (defun hog-follow-link-at-point ()
   "Follow the Hog source file at point."
@@ -764,4 +763,4 @@ template at a specific PATH."
 
 (provide 'hog)
 ;;; hog.el ends here
-;; LocalWords:  xml vivado vhdl verilog systemverilog stringifies globbed unglob SRC
+;; LocalWords:  xml vivado vhdl verilog systemverilog stringifies globbed unglob SRC Xilinx
