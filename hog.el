@@ -310,7 +310,7 @@ The resulting list is of the form:
 ;; GHDL-LS JSON Project File Creation
 ;;------------------------------------------------------------------------------
 
-(defvar hog--ghdl-ls-options
+(defvar hog-ghdl-ls-options
   (let ((options (make-hash-table)))
     (puthash 'ghdl_analysis
              '("--workdir=work"
@@ -335,7 +335,8 @@ The resulting list is of the form:
                "--warn-static"
                "--std=08"
                "-fexplicit")
-             options) options))
+             options) options)
+  "Options to be provided to GHDL language server.")
 
 (defun hog--ghdl-ls-format-lib (lib)
   "Format a VHDL library list for Language Server Protocol use.
@@ -363,10 +364,10 @@ Return a list by applying `hog--ghdl-ls-format-lib' to each element in LIBS."
   "Create a GHDL language server configuration hash table.
 
 Takes LIBS, formats them, and inserts into the hash table under `files'.
-Inserts `hog--ghdl-ls-options' under `options'. Returns the configuration
+Inserts `hog-ghdl-ls-options' under `options'. Returns the configuration
 hash table."
   (let ((config (make-hash-table)))
-    (puthash 'options hog--ghdl-ls-options config)
+    (puthash 'options hog-ghdl-ls-options config)
     (puthash 'files (hog--ghdl-ls-format-libs libs) config)
     config))
 
