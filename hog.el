@@ -112,16 +112,17 @@ Can be set in dir-locals to be changed on a per-project basis.")
 
 (defun hog--get-project ()
   "Interactively get a hog project."
-  (completing-read "Project: " (hog--get-projects) nil t))
+  (let ((project (completing-read "Project: " (hog--get-projects) nil t)))
+    (if (string-empty-p project)
+        (message "You must specify a valid project!")
+      project)))
 
 (defun hog--get-project-and-do-lisp (fn)
   "Interactively get a Hog project and call FN on it.
 
 FN should be a function which take a project as an argument."
-  (let ((project (hog--get-project)))
-    (if (not (string-empty-p project))
-        (funcall fn project)
-      (message "You must specify a valid project!"))))
+  (when (hog--get-project)
+    (funcall fn)))
 
 (defun hog--get-project-and-run-command (command)
   "Interactively get a hog project and run a COMMAND on it."
