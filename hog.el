@@ -4,7 +4,7 @@
 
 ;; Author: Andrew Peck <peckandrew@gmail.com>
 ;; URL: https://github.com/andrewpeck/hog.el
-;; Version: 0.1.0
+;; Version: 0.2.0
 ;; Package-Requires: ((emacs "27.1"))
 ;; Keywords: tools vhdl fpga
 ;;
@@ -93,10 +93,7 @@ Can be set in dir-locals to be changed on a per-project basis.")
 
 (defun hog--get-projects ()
   "Get a list of available Hog projects."
-  ;; convert the full directory into the path, e.g.
-  ;; /home/topham/project/Top/myproject --> myproject
 
-  ;; list all directories in the Top/ folder
   (let ((hog-top-folder (concat (hog--project-root) "Top")))
     (when (file-directory-p hog-top-folder)
       (sort (thread-last (shell-command-to-string (format "find %s -name hog.conf -type f" hog-top-folder))
@@ -271,61 +268,6 @@ The resulting list is of the form:
 (defvar hog-unisim-library
   (list "unisim"
         (list (format "%s/data/vhdl/src/unisims/unisim_VCOMP.vhd" hog-vivado-path))))
-
-;;------------------------------------------------------------------------------
-;; VHDL Tool YAML Config Generation
-;;------------------------------------------------------------------------------
-
-(defvar hog-vhdl-tool-preferences
-  '(("TypeCheck"            . t)
-    ("MultiLineErrors"      . t)
-    ("CheckOnChange"        . t)
-    ("Lint"                 . t)
-    ("FirstSyntaxErrorOnly" . t)))
-
-(defvar hog-vhdl-tool-lint-settings
-  '(("Threshold" ."Warning")
-    ("DeclaredNotAssigned" .
-     (("enabled"  . t)
-      ("severity" . "Warning")))
-    ("DeclaredNotRead"           . t)
-    ("ReadNotAssigned"           . t)
-    ("SensitivityListCheck"      . t)
-    ("ExtraSensitivityListCheck" . t)
-    ("DuplicateSensitivity"      . t)
-    ("LatchCheck"                . t)
-    ("VariableNotRead"           . t)
-    ("PortNotRead"               . t)
-    ("PortNotWritten"            . t)
-    ("NoPrimaryUnit"             . t)
-    ("DuplicateLibraryImport"    . t)
-    ("DuplicatePackageUsage"     . t)
-    ("DeprecatedPackages"        . t)
-    ("ImplicitLibraries"         . t)
-    ("DisconnectedPorts"         . t)
-    ("IntNoRange"                . t)))
-
-;;;###autoload
-(defun hog-vhdl-tool-create-project-yaml ()
-  "Create a VHDL-tool yaml file for a Hog PROJECT."
-  (hog--get-project-and-do-lisp
-   (lambda (project)
-     (with-temp-file (format "%s/vhdltool-config.yaml" (hog--project-root))
-       (insert
-        (json-encode
-         (list (cons 'Libraries
-                     (mapcar (lambda (lib)
-                               (list (cons 'name (car lib))
-                                     (cons 'paths (apply #'vector (cadr lib)))))
-                             (append
-                              (hog--parse-project-xml project)
-                              (list hog-ieee-library)
-                              (list hog-unisim-library))))
-               (cons 'Preferences
-                     hog-vhdl-tool-preferences)
-               (cons 'Lint
-                     hog-vhdl-tool-lint-settings))))
-       (json-pretty-print-buffer)))))
 
 ;;------------------------------------------------------------------------------
 ;; VHDL LS TOML Project File Creation
