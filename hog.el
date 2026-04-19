@@ -208,7 +208,11 @@ colorize it using CCZE, with the Hog arguments ARGS."
   (let ((lib-list nil))
     (dolist (file-node
              ;; get a list of all the Project -> FileSets -> FileSet --> File nodes
-             (xml-get-children (assq 'FileSet (assq 'FileSets (assq 'Project (xml-parse-file project-file)))) 'File))
+             (xml-get-children
+              (thread-last (xml-parse-file project-file)
+                           (assq 'Project)
+                           (assq 'FileSets)
+                           (assq 'FileSet)) 'File))
       ;; for each node, extract the path to the .src file
       (let ((src-file
              ;; strip off the vivado relative path; make it relative to the repo root instead
