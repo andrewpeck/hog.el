@@ -344,14 +344,10 @@ The resulting list is of the form:
 
 (defun hog--vhdl-ls-parse-libs (libraries)
   "LIBRARIES."
-  (let ((text "[libraries]\n"))
-    (setq libraries (append libraries (list hog-ieee-library)))
-    (setq libraries (append libraries (list hog-unisim-library)))
-    (dolist (library libraries)
-      ;;(concat text (hog--vhdl-ls-lib-to-string library))
-      ;;(print (concat text (hog--vhdl-ls-lib-to-string library)))
-      (setq text (concat text (hog--vhdl-ls-lib-to-string library))))
-    text))
+  (let ((libraries (append libraries
+                           (list hog-ieee-library)
+                           (list hog-unisim-library))))
+    (concat "[libraries]\n" (mapconcat #'hog--vhdl-ls-lib-to-string libraries ""))))
 
 ;;;###autoload
 (defun hog-vhdl-ls-create-project-toml ()
