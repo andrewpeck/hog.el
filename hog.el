@@ -256,18 +256,19 @@ The resulting list is of the form:
     (setf (cadr lib) (append (cadr lib) (list file-name) )))
   src-list)
 
-(defvar hog-ieee-library
-  '("ieee" (
-            "/usr/local/lib/ghdl/src/synopsys/*.vhdl"
+(defvar hog-vhdl-ieee-library
+  '("ieee" ("/usr/local/lib/ghdl/src/synopsys/*.vhdl"
             "/usr/local/lib/ghdl/src/std/v08/*.vhdl"
             "/usr/local/lib/ghdl/src/ieee2008/*.vhdl"
             "/usr/lib/ghdl/src/synopsys/*.vhdl"
             "/usr/lib/ghdl/src/std/v08/*.vhdl"
-            "/usr/lib/ghdl/src/ieee2008/*.vhdl")))
+            "/usr/lib/ghdl/src/ieee2008/*.vhdl"))
+  "Location of VHDL ieee libraries.")
 
-(defvar hog-unisim-library
+(defvar hog-xilinx-vhdl-unisim-library
   (list "unisim"
-        (list (format "%s/data/vhdl/src/unisims/unisim_VCOMP.vhd" hog-vivado-path))))
+        (list (format "%s/data/vhdl/src/unisims/unisim_VCOMP.vhd" hog-vivado-path)))
+  "Location of Xilinx VHDL unisim library.")
 
 ;;------------------------------------------------------------------------------
 ;; VHDL LS TOML Project File Creation
@@ -287,8 +288,8 @@ The resulting list is of the form:
 (defun hog--vhdl-ls-parse-libs (libraries)
   "LIBRARIES."
   (let ((libraries (append libraries
-                           (list hog-ieee-library)
-                           (list hog-unisim-library))))
+                           (list hog-vhdl-ieee-library)
+                           (list hog-xilinx-vhdl-unisim-library))))
     (concat "[libraries]\n" (mapconcat #'hog--vhdl-ls-lib-to-string libraries ""))))
 
 ;;;###autoload
@@ -375,7 +376,7 @@ hash table."
    (lambda (project)
      (let ((output-file (format "%shdl-prj.json" (hog--project-root)))
            (config (hog--ghdl-ls-make-config
-                    (append (list hog-unisim-library)
+                    (append (list hog-xilinx-vhdl-unisim-library)
                             (hog--parse-project-xml project)))))
        (with-temp-file output-file
          (insert (json-encode config))
