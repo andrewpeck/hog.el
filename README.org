@@ -50,6 +50,16 @@ Configuration variables can be set on a per-project basis, e.g. by adding the fo
 #+begin_src elisp
 ((nil . ((hog-vivado-path . "/storage/Xilinx/Vivado/2020.1"))))
 #+end_src
+
+To activate hog-src-mode you can use a use-package configuration such as:
+
+#+begin_src elisp
+(use-package hog
+  :mode (("\\.src\\'"  . hog-src-mode)
+         ("\\.list\\'" . hog-src-mode)
+         ("\\.con\\'"  . hog-src-mode)))
+#+end_src
+
 To have flycheck integration please add the following snippet to your configuration.
 
 #+begin_src elisp
@@ -70,4 +80,3 @@ To have flycheck integration please add the following snippet to your configurat
 
   (add-to-list 'flycheck-checkers 'hog-src-checker)
 #+end_src
-
