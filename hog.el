@@ -536,10 +536,8 @@ in that path"
 
   (let ((file-count 0)
         (file-size 0)
-        (xci-files
-         (split-string
-          (shell-command-to-string
-           (concat "find " (hog--project-root) " -name *.xci")) "\n" t)))
+        (xci-files (directory-files-recursively (hog--project-root)
+                                                (rx ".xci" eos))))
     ;; loop over each xci file
     (dolist (xci xci-files)
       (let* ((file-name-noext (file-name-sans-extension xci))
