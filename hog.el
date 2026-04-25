@@ -157,6 +157,7 @@ FN should be a function which take a project as an argument."
 (defun hog-open-project ()
   "Open the Hog PROJECT."
   ;; TODO: check if the xml file exists, prompt to create if it doesn't
+  (interactive)
   (hog--get-project-and-do-lisp
    (lambda (project)
      (hog--check-for-vivado)
@@ -374,6 +375,7 @@ hash table."
 ;;;###autoload
 (defun hog-ghdl-ls-create-project-json ()
   "Create GHDL-LS Json File."
+  (interactive)
   (hog--get-project-and-do-lisp
    (lambda (project)
      (let ((output-file (format "%shdl-prj.json" (hog--project-root)))
