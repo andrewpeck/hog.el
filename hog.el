@@ -216,23 +216,23 @@ colorize it using CCZE, with the Hog arguments ARGS."
 (defun hog--parse-vivado-xpr (project-file)
   "Parse a Vivado XPR PROJECT-FILE into a list of libraries and their sources."
   (let ((lib-list nil))
-    (dolist (file-node
-             ;; get a list of all the Project -> FileSets -> FileSet --> File nodes
+    (dolist (fileset-node
              (xml-get-children
               (thread-last (xml-parse-file project-file)
                            (assq 'Project)
-                           (assq 'FileSets)
-                           (assq 'FileSet)) 'File))
-      ;; for each node, extract the path to the .src file
-      (let ((src-file
-             ;; strip off the vivado relative path; make it relative to the repo root instead
-             ;; (regexp-quote "$PPRDIR/../../")
-             (replace-regexp-in-string "$PPRDIR\/\.\.\/\.\.\/" "" (xml-get-attribute file-node 'Path ))))
-        ;; for each node, extract the library property (only applies to vhdl sources)
-        (dolist (attr (xml-get-children (assq 'FileInfo (cdr file-node)) 'Attr))
-          (when (equal (xml-get-attribute attr 'Name) "Library")
-            (let ((lib  (xml-get-attribute attr 'Val)))
-              (setf lib-list (hog--append-to-library lib-list lib src-file)))))))
+                           (assq 'FileSets))
+              'FileSet))
+      (dolist (file-node (xml-get-children fileset-node 'File))
+        ;; for each node, extract the path to the .src file
+        (let ((src-file
+               ;; strip off the vivado relative path; make it relative to the repo root instead
+               ;; (regexp-quote "$PPRDIR/../../")
+               (replace-regexp-in-string "$PPRDIR\/\.\.\/\.\.\/" "" (xml-get-attribute file-node 'Path ))))
+          ;; for each node, extract the library property (only applies to vhdl sources)
+          (dolist (attr (xml-get-children (assq 'FileInfo (cdr file-node)) 'Attr))
+            (when (equal (xml-get-attribute attr 'Name) "Library")
+              (let ((lib  (xml-get-attribute attr 'Val)))
+                (setf lib-list (hog--append-to-library lib-list lib src-file))))))))
     lib-list))
 
 (defun hog--parse-xilinx-fileset (fileset-file path-prefix)

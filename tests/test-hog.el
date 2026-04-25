@@ -30,6 +30,32 @@
     (should (equal (car (last optohybrid-files))
                    "gem/hdl/oh_fe/pkg/tmr_dis_pkg.vhd"))))
 
+(ert-deftest test-parse-vivado-xpr-multiple-filesets ()
+  (let ((project-file "/tmp/hog-xpr-multi-test.xpr"))
+    (unwind-protect
+        (progn
+          (with-temp-file project-file
+            (insert "<?xml version=\"1.0\"?>\n"
+                    "<Project>\n"
+                    "  <FileSets>\n"
+                    "    <FileSet Name=\"sources_1\">\n"
+                    "      <File Path=\"$PPRDIR/../../a.vhd\">\n"
+                    "        <FileInfo><Attr Name=\"Library\" Val=\"lib1\"/></FileInfo>\n"
+                    "      </File>\n"
+                    "    </FileSet>\n"
+                    "    <FileSet Name=\"sim_1\">\n"
+                    "      <File Path=\"$PPRDIR/../../b.vhd\">\n"
+                    "        <FileInfo><Attr Name=\"Library\" Val=\"lib2\"/></FileInfo>\n"
+                    "      </File>\n"
+                    "    </FileSet>\n"
+                    "  </FileSets>\n"
+                    "</Project>\n"))
+          (should (equal (hog--parse-vivado-xpr project-file)
+                         '(("lib1" ("a.vhd"))
+                           ("lib2" ("b.vhd"))))))
+      (when (file-exists-p project-file)
+        (delete-file project-file)))))
+
 (ert-deftest test-parse-project-xml ()
   (should (equal
            (hog--parse-project-xml 'test)
