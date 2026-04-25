@@ -126,8 +126,8 @@ Can be set in dir-locals to be changed on a per-project basis.")
   "Interactively get a Hog project and call FN on it.
 
 FN should be a function which take a project as an argument."
-  (when (hog--get-project)
-    (funcall fn)))
+  (when-let* ((project (hog--get-project)))
+    (funcall fn project)))
 
 (defun hog--get-project-and-run-command (command)
   "Interactively get a hog project and run a COMMAND on it."
