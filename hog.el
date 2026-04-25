@@ -395,17 +395,17 @@ hash table."
 (defun hog-init-project ()
   "Init a Hog project in the current directory."
   (interactive)
-  (shell-command "git submodule add https://gitlab.com/hog-cern/Hog.git")
+  (call-process "git" nil 0 nil "submodule" "add" "https://gitlab.com/hog-cern/Hog.git")
   (unless (file-exists-p ".gitignore")
-    (shell-command "cp Hog/Templates/gitignore .gitignore"))
+    (copy-file "Hog/Templates/gitignore" ".gitignore"))
 
   (unless (file-exists-p ".gitlab-ci.yml")
-    (shell-command "cp Hog/Templates/gitlab-ci.yml .gitlab-ci.yml"))
+    (copy-file "Hog/Templates/gitlab-ci.yml" ".gitlab-ci.yml"))
 
   (unless (file-exists-p "Top/project/hog.conf")
     (mkdir "Top/project" t)
     (mkdir "Top/project/list" t)
-    (shell-command "cp Hog/Templates/hog_vivado.conf Top/project/hog.conf")))
+    (copy-file "Hog/Templates/hog_vivado.conf" "Top/project/hog.conf")))
 
 ;;------------------------------------------------------------------------------
 ;; Hog Source File Mode
