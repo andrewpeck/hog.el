@@ -559,8 +559,8 @@ in that path"
                        '("hdl" "synth" "doc" "sim" "ila_v6_2"))))
           (dolist (file directories-to-remove)
             (when (file-exists-p file)
-              (setq file-count (+ (string-to-number (shell-command-to-string (concat "find " file " | wc -l"))) file-count)
-                    file-size (+ (string-to-number (car (split-string (shell-command-to-string (concat "du " file))))) file-size))
+              (setq file-count (+ (length (directory-files-recursively file ".*" t)) file-count)
+                    file-size (+ (file-attribute-size (file-attributes file)) file-size))
               (message (format "Removing %s\n" file))
               (delete-directory file t))))))
 
