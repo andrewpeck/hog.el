@@ -95,11 +95,16 @@ Can be set in dir-locals to be changed on a per-project basis.")
   "Get a list of available Hog projects."
 
   (let ((hog-top-folder (concat (hog--project-root) "Top")))
-    (when (file-directory-p hog-top-folder)
-      (sort (thread-last (shell-command-to-string (format "find %s -name hog.conf -type f" hog-top-folder))
-                         (replace-regexp-in-string (concat  hog-top-folder "/") "")
-                         (replace-regexp-in-string "/hog.conf" "")
-                         (split-string)) #'string<))))
+    (unless (file-directory-p hog-top-folder)
+      (user-error "%s not found" hog-top-folder))
+
+    (sort (thread-last
+            (directory-files-recursively
+             hog-top-folder
+             (rx bos "hog.conf" eos))
+            (mapcar #'file-name-directory)
+            (mapcar #'directory-file-name)
+            (mapcar #'file-name-base)) #'string<)))
 
 (defun hog--get-project-xml (project)
   "Return the XML (XPR) file for a given Hog PROJECT."
