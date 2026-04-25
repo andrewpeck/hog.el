@@ -458,7 +458,15 @@ hash table."
 (defun hog-add-src-file ()
   "Add a source file in the current project."
   (interactive)
-  (insert (completing-read "File: " (split-string (shell-command-to-string "git ls-files --full-name :/*.vhd :/*.sv :/*.v :/*.svh :/*.src :/*.xdc :/*.tcl")))))
+  (let* ((default-directory (hog--project-root))
+         (files (process-lines "git" "ls-files" "--full-name"
+                               "*.vhd" "*.sv" "*.v" "*.svh"
+                               "*.src" "*.xdc" "*.tcl")))
+    (when-let* ((file (completing-read "File: " files)))
+      (save-excursion
+        (end-of-line)
+        (newline)
+        (insert file)))))
 
 ;;;###autoload
 (defun hog-expand-glob-at-point ()
