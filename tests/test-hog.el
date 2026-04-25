@@ -18,7 +18,17 @@
            (hog--project-root))))
 
 (ert-deftest test-parse-project-ppr ()
-  (should (equal 1 1)))
+  (let* ((libs (hog--parse-project-xml "oh_ge11"))
+         (optohybrid-files (cadr (assoc "optohybrid" libs))))
+    (should (equal (mapcar #'car libs)
+                   '("optohybrid")))
+    (should (= (length optohybrid-files) 73))
+    (should (equal (car optohybrid-files)
+                   "gem/hdl/oh_fe/pkg/generated/oh_ge11/registers.vhd"))
+    (should (member "boards/ge11_oh/ip/mgt/mgt_gtx.vhd" optohybrid-files))
+    (should (member "common/hdl/utils/prbs_any.vhd" optohybrid-files))
+    (should (equal (car (last optohybrid-files))
+                   "gem/hdl/oh_fe/pkg/tmr_dis_pkg.vhd"))))
 
 (ert-deftest test-parse-project-xml ()
   (should (equal
@@ -134,6 +144,27 @@
                "gbt-sc/GBT-SC/SCA/sca_rx_fifo.vhd"
                "gbt-sc/GBT-SC/SCA/sca_top.vhd"
                "gbt-sc/GBT-SC/SCA/sca_tx.vhd"))))))
+
+(ert-deftest test-ghdl-ls-create-project-json-ppr ()
+  (let ((output-file (expand-file-name "hdl-prj.json" (hog--project-root))))
+    (unwind-protect
+        (cl-letf (((symbol-function 'hog--get-project) (lambda () "oh_ge11")))
+          (hog-ghdl-ls-create-project-json)
+          (let* ((json-object-type 'plist)
+                 (json-array-type 'list)
+                 (config (json-read-file output-file))
+                 (files (plist-get config :files)))
+            (should (equal (plist-get (car files) :library) "unisim"))
+            (should (member "optohybrid"
+                            (mapcar (lambda (file)
+                                      (plist-get file :library))
+                                    files)))
+            (should (member "gem/hdl/oh_fe/pkg/generated/oh_ge11/registers.vhd"
+                            (mapcar (lambda (file)
+                                      (plist-get file :file))
+                                    files)))))
+      (when (file-exists-p output-file)
+        (delete-file output-file)))))
 
 ;;------------------------------------------------------------------------------
 ;; Testing

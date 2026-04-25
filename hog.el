@@ -236,12 +236,52 @@ colorize it using CCZE, with the Hog arguments ARGS."
               (setf lib-list (hog--append-to-library lib-list lib src-file)))))))
     lib-list))
 
+(defun hog--parse-xilinx-fileset (fileset-file path-prefix)
+  "Parse a Xilinx FILESET-FILE and collect library sources.
+
+PATH-PREFIX is stripped from file paths to make them relative to the repo root."
+  (let ((lib-list nil))
+    (dolist (file-node
+             (xml-get-children
+              (thread-last (xml-parse-file fileset-file)
+                           (assq 'DARoots)
+                           (assq 'FileSet))
+              'File))
+      (let ((src-file (replace-regexp-in-string
+                       (regexp-quote path-prefix)
+                       ""
+                       (xml-get-attribute file-node 'Path))))
+        (dolist (attr (xml-get-children (assq 'FileInfo (cdr file-node)) 'Attr))
+          (when (equal (xml-get-attribute attr 'Name) "Library")
+            (let ((lib (xml-get-attribute attr 'Val)))
+              (setf lib-list (hog--append-to-library lib-list lib src-file)))))))
+    lib-list))
+
 (defun hog--parse-ise-ppr (project-file)
   "Parse an ISE PPR PROJECT-FILE.
 
 Parses the PPR file into a list of libraries and their sources."
-  ;; FIXME need to parse the dang thing
-  project-file)
+  (let* ((project-dir (file-name-directory project-file))
+         (path-prefix "$PPRDIR/../../")
+         (lib-list nil))
+    (dolist (fileset-node
+             (xml-get-children
+              (thread-last (xml-parse-file project-file)
+                           (assq 'Project))
+              'FileSet))
+      (let* ((dir (xml-get-attribute fileset-node 'Dir))
+             (file (xml-get-attribute fileset-node 'File))
+             (fileset-file (expand-file-name (concat (file-name-base project-file)
+                                                     "/" dir "/" file)
+                                             project-dir)))
+        (when (file-exists-p fileset-file)
+          (dolist (library (hog--parse-xilinx-fileset fileset-file path-prefix))
+            (dolist (src-file (cadr library))
+              (setf lib-list (hog--append-to-library
+                              lib-list
+                              (car library)
+                              src-file)))))))
+    lib-list))
 
 (defun hog--parse-xml (xml)
   "Parse a Xilinx XML file into a list.
