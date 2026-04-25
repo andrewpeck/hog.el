@@ -291,11 +291,10 @@ The resulting list is of the form:
 ((library1 (file1 file2 file3))
  (library2 (file1 file2 file3)))"
 
-  (let* ((extension (file-name-extension xml)))
-    (cond ((string-equal extension "xpr")
-           (hog--parse-vivado-xpr xml))
-          ((string-equal extension "ppr")
-           (hog--parse-ise-ppr xml)))))
+  (pcase (file-name-extension xml)
+    ("xpr" (hog--parse-vivado-xpr xml))
+    ("ppr" (hog--parse-ise-ppr xml))
+    (_     (user-error "Unrecognized extension for %s" xml))))
 
 (defun hog--parse-project-xml (project)
   "Parse a PROJECT xml file into a list."
