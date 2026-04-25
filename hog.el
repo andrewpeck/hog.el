@@ -168,9 +168,9 @@ FN should be a function which take a project as an argument."
      (hog--check-for-vivado)
      (let* ((project-file (hog--get-project-xml project))
             (command (format "cd %s && source %s && vivado %s &"
-                             (hog--project-root)
-                             (concat  hog-vivado-path "/settings64.sh")
-                             project-file)))
+                             (shell-quote-argument (hog--project-root))
+                             (shell-quote-argument (concat hog-vivado-path "/settings64.sh"))
+                             (shell-quote-argument project-file))))
        (message (format "Opening Hog Project %s" project))
        (call-process "bash" nil 0 nil "-c" command)))))
 
@@ -184,13 +184,20 @@ colorize it using CCZE, with the Hog arguments ARGS."
 
     ;; construct the output command
     (let ((cmd-str (format "cd %s && source %s && %s | tee hog.log %s"
-                           (hog--project-root)                        ;; cd %s
-                           (concat  hog-vivado-path "/settings64.sh") ;; source vivado
-                           (concat
-                            ;; path/Hog/Launch{X}.sh project <args>
-                            (hog--project-root) command " " project " " (string-join args " "))
-                           ;; optional ccze
-                           (if (executable-find "ccze") " | ccze -A" ""))))
+                           (shell-quote-argument (hog--project-root))
+                           (shell-quote-argument (concat hog-vivado-path "/settings64.sh"))
+                           (mapconcat #'shell-quote-argument
+                                      (append (let ((command-parts (split-string-and-unquote command)))
+                                                (cons (expand-file-name (car command-parts)
+                                                                        (hog--project-root))
+                                                      (cdr command-parts)))
+                                              (list project)
+                                              args)
+                                      " ")
+                           ;; optional ccze or cczr
+                           (cond ((executable-find "cczr") " | cczr")
+                                 ((executable-find "ccze") " | ccze -A")
+                                 (t "")))))
       ;; ... and run it
       (compile cmd-str))
 
