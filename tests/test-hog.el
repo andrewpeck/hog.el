@@ -192,6 +192,11 @@
       (when (file-exists-p output-file)
         (delete-file output-file)))))
 
+(ert-deftest test-hog-check-src-file-checks-last-line-without-newline ()
+  (with-temp-buffer
+    (insert "missing.vhd")
+    (should (= (hog-check-src-file) 1))))
+
 ;;------------------------------------------------------------------------------
 ;; Testing
 ;;------------------------------------------------------------------------------

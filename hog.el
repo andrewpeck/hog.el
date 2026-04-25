@@ -745,7 +745,7 @@ template at a specific PATH."
   (let ((errors 0))
     (save-excursion
       (goto-char (point-min))
-      (while (< (line-number-at-pos) (line-number-at-pos (point-max)))
+      (while (not (eobp))
 
         ;; skip comments
         (unless (string-match "^#.*"
