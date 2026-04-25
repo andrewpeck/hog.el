@@ -475,17 +475,15 @@ in that path"
            (files (file-expand-wildcards file-with-path nil))
 
            ;; Converted the expanded absolute file names back to relative ones
-           (files-relative (mapcar (lambda (x) (replace-regexp-in-string (hog--project-root) "" x)) files))
+           (files-relative (mapcar (lambda (x) (replace-regexp-in-string (hog--project-root) "" x)) files)))
 
-           ;; Concate everything together into a string
-           (files-expanded (string-join files-relative "\n")))
-
-      (unless files-expanded
+      (unless files-relative
         (user-error "No files found at glob %s" filename))
-
-      (end-of-line)
-      (newline)
-      (insert files-expanded))))
+      ;; Concate everything together into a string
+      (let ((files-expanded (string-join files-relative "\n")))
+        (end-of-line)
+        (newline)
+        (insert files-expanded)))))
 
 (defvar hog-src-mode-map (make-sparse-keymap)
   "Keymap for `hog-src-mode'.")
